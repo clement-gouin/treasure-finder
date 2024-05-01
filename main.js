@@ -86,6 +86,20 @@ let app = {
             locationAvailable: false,
             latitude: 0,
             longitude: 0,
+            points: [
+                {
+                    name: 'Point #1',
+                    latitude: 47.471277919336124,
+                    longitude: -0.5475399332462343,
+                    treasure: 'Mairie',
+                },
+                {
+                    name: 'Point #2',
+                    latitude: 47.470627076842206,
+                    longitude: -0.5549255956103306,
+                    treasure: 'Cathédrale',
+                },
+            ],
         };
     },
     computed: {
@@ -105,6 +119,21 @@ let app = {
             const min = (deg - Math.floor(deg)) * 60;
             const sec = (min - Math.floor(min)) * 60;
             return `${Math.floor(deg).toFixed(0)}°${Math.floor(min).toFixed(0).padStart(2, '0')}'${sec.toFixed(2).padStart(5, '0')}"`;
+        },
+        distance(lat1, lon1, lat2, lon2) {
+            const R = 6371e3;
+            const φ1 = lat1 * Math.PI/180;
+            const φ2 = lat2 * Math.PI/180;
+            const Δφ = (lat2-lat1) * Math.PI/180;
+            const Δλ = (lon2-lon1) * Math.PI/180;
+            const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+                      Math.cos(φ1) * Math.cos(φ2) *
+                      Math.sin(Δλ/2) * Math.sin(Δλ/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        },
+        distanceToPoint(point) {
+            return this.distance(this.latitude, this.longitude, point.latitude, point.longitude);
         },
         showApp() {
             document.getElementById('app').setAttribute('style', '');
