@@ -13,8 +13,8 @@
         <p>Latitude: {{ locationAvailable ? latitudeText : '???' }}</p>
         <p>Longitude: {{ locationAvailable ? longitudeText : '???' }}</p>
         <br>
-        <p v-for="point in points">
-            {{ point.name }}: {{ locationAvailable ? distanceToPoint(point).toFixed(0) : '???' }}m {{ (locationAvailable && distanceToPoint(point) <= 20) ? ('=> ' + point.treasure) : '' }}
+        <p v-for="(point, i) in points">
+            {{ point.name ?? `Point #${i + 1}` }}: {{ locationAvailable ? distanceText(distanceToPoint(point)) : '???' }} {{ (locationAvailable && distanceToPoint(point) <= 20) ? ('=> ' + point.treasure) : '' }}
         </p>
     </main>
 </body>
