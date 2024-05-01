@@ -147,10 +147,19 @@ let app = {
         navigator.geolocation.watchPosition(this.updatePosition);
       }
     },
+    base64URLdecode(str) {
+      const base64Encoded = str.replace(/-/g, '+').replace(/_/g, '/');
+      const padding = str.length % 4 === 0 ? '' : '='.repeat(4 - (str.length % 4));
+      const base64WithPadding = base64Encoded + padding;
+      return atob(base64WithPadding);
+    },
+    decodeData(str) {
+      return this.base64URLdecode(str.split("").reverse().join(""));
+    },
     fetchData() {
       const url = new URL(window.location);
       if (url.searchParams.get("data") !== null) {
-        fetch(atob(url.searchParams.get("data")), {
+        fetch(this.decodeData(url.searchParams.get("data")), {
           headers: {
             Origin: window.location.host,
           },
