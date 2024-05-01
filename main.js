@@ -104,7 +104,7 @@ let app = {
             const deg = Math.abs(value);
             const min = (deg - Math.floor(deg)) * 60;
             const sec = (min - Math.floor(min)) * 60;
-            return `${Math.floor(deg).toFixed(0)}°${Math.floor(min).toFixed(0).padStart(2, '0')}'${sec.toFixed(1).padStart(3, '0')}"`;
+            return `${Math.floor(deg).toFixed(0)}°${Math.floor(min).toFixed(0).padStart(2, '0')}'${sec.toFixed(2).padStart(5, '0')}"`;
         },
         showApp() {
             document.getElementById('app').setAttribute('style', '');
