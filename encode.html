@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Treasure Finder Encoder</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
     <input id="input">
@@ -13,7 +14,7 @@
         }
 
         function oninput(event) {
-            const data = base64URLencode('https://api.allorigins.win/raw?url=' + event.target.value).split("").reverse().join("");
+            const data = base64URLencode(event.target.value).split("").reverse().join("");
             document.getElementById('output').setAttribute('href', window.location.href.replace('/encode.html', '/?data=' + data));
         }
 
