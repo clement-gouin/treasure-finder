@@ -1,21 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Treasure Finder</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script type="text/javascript" src="main.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body>
-    <main id="app" style="display:none">
-        <p>Latitude: {{ locationAvailable ? latitudeText : '???' }}</p>
-        <p>Longitude: {{ locationAvailable ? longitudeText : '???' }}</p>
-        <br>
-        <p v-for="(point, i) in points">
-            {{ point.name ?? `Point #${i + 1}` }}: {{ locationAvailable ? distanceText(distanceToPoint(point)) : '???' }} {{ (locationAvailable && distanceToPoint(point) <= 20) ? ('=> ' + point.treasure) : '' }}
-        </p>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
+    <main id="app" style="display: none">
+      <p>Latitude: {{ locationAvailable ? latitudeText : '???' }}</p>
+      <p>Longitude: {{ locationAvailable ? longitudeText : '???' }}</p>
+      <br />
+      <template v-for="(point, i) in points">
+        <p class="point" v-bind:style="style(point)">
+        • {{ point.name ?? `Point #${i + 1}` }}: {{ distanceText(distanceToPoint(point)) }}
+        </span>
+        <p
+          class="secret"
+          v-if="locationAvailable && distanceToPoint(point) <= MINIMUM"
+        >
+          {{ point.treasure }}
+        </span>
+      </p>
     </main>
-</body>
+  </body>
 </html>

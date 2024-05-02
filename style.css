@@ -74,9 +74,20 @@ h6 {
   isolation: isolate;
 }
 
-
 /* Custom */
 
 * {
-  font-family: 'Courier New', Courier, monospace;
+  font-family: "Courier New", Courier, monospace;
+  color: #212121;
+}
+
+main {
+  padding: 1em;
+}
+
+.secret {
+  display: block;
+  border: 1px solid #212121;
+  padding: 0.5em;
+  background-color: #eeeeee;
 }
