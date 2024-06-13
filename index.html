@@ -21,7 +21,8 @@
           class="secret"
           v-if="locationAvailable && distanceToPoint(point) <= MINIMUM"
         >
-          {{ point.treasure }}
+          <a v-if="isValidUrl(point.treasure)" :href="point.treasure">open link</a>
+          <span v-else>{{ point.treasure }}</span>
         </span>
       </p>
     </main>
