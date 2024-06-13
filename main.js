@@ -34,6 +34,14 @@ let app = {
     },
   },
   methods: {
+    isValidUrl(value) {
+      try { 
+      	return Boolean(new URL(value)); 
+      }
+      catch(e){ 
+      	return false; 
+      }
+    },
     dmsText(value) {
       const deg = Math.abs(value);
       const min = (deg - Math.floor(deg)) * 60;
