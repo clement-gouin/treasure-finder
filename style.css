@@ -107,6 +107,7 @@ main {
   margin: auto;
   background-color: var(--background-primary);
   min-height: 100%;
+  font-size: 25px;
 }
 
 .secret {
