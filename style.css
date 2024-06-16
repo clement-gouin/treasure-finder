@@ -76,18 +76,52 @@ h6 {
 
 /* Custom */
 
+:root {
+  /* https://materialui.co/colors/ */
+  --hue-primary: 199.53;
+  --sat-primary: 18.3%;
+  --background: hsl(var(--hue-primary), var(--sat-primary), 96.08%);
+  --background-primary: hsl(var(--hue-primary), var(--sat-primary), 93.33%);
+  --color-primary: hsl(var(--hue-primary), var(--sat-primary), 50%);
+  --text-primary: hsl(var(--hue-primary), var(--sat-primary), 25%);
+  --text-secondary: hsl(var(--hue-primary), var(--sat-primary), 30%);
+}
+
 * {
   font-family: "Courier New", Courier, monospace;
-  color: #212121;
+  color: var(--text-primary);
+}
+
+html,
+body {
+  padding: 0;
+  max-width: 100%;
+}
+
+body {
+  background-color: var(--background);
 }
 
 main {
-  padding: 1em;
+  padding: 1.5rem;
+  margin: auto;
+  background-color: var(--background-primary);
+  min-height: 100%;
 }
 
 .secret {
   display: block;
   border: 1px solid #212121;
-  padding: 0.5em;
+  padding: 0.5em 1em;
+  margin: 0 0 0.5em 0;
   background-color: #eeeeee;
+}
+
+@media only screen and (min-width: 768px) {
+  main {
+    max-width: 42rem;
+  }
+  table {
+    font-size: inherit;
+  }
 }
