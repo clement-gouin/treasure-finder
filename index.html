@@ -14,18 +14,28 @@
       <p>Latitude: {{ locationAvailable ? latitudeText : '???' }}</p>
       <p>Longitude: {{ locationAvailable ? longitudeText : '???' }}</p>
       <br />
+      <hr>
+      <br>
       <template v-for="(point, i) in points">
         <p class="point" v-bind:style="style(point)">
         • {{ point.name ?? `Point #${i + 1}` }}: {{ distanceText(distanceToPoint(point)) }}
         </span>
         <p
           class="secret"
-          v-if="locationAvailable && distanceToPoint(point) <= MINIMUM"
-        >
-          <a v-if="isValidUrl(point.treasure)" :href="point.treasure" target="_blank">open link</a>
-          <span v-else>{{ point.treasure }}</span>
-        </span>
-      </p>
+          v-if="debug || (locationAvailable && distanceToPoint(point) <= MINIMUM)"
+          v-html="point.treasure"
+        ></p>
+      </template>
+      <div v-if="debug" style="font-size:medium">
+        <br>
+        <hr>
+        <br>
+        <h1>Treasure finder</h1>
+        <textarea v-model="debugData" rows="12"></textarea>
+        <br />
+        <br />
+        <a v-if="debugData.length" :href="debugUrl" target="_blank">Output link</a>
+      </div>
     </main>
   </body>
 </html>
