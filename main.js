@@ -2,16 +2,19 @@
 let app = {
   data() {
     return {
+      debug: true,
+      debugData:
+        "48.85832397934772\n2.2940806701383734\nYou found me !\nsample point",
       locationAvailable: false,
       latitude: 0,
       longitude: 0,
       points: [],
-      MINIMUM: 20,
+      MINIMUM: 10,
     };
   },
   computed: {
-    currentYear() {
-      return new Date().getFullYear();
+    debugUrl() {
+      return window.location.pathname + "?z=" + this.encodeData(this.debugData);
     },
     latitudeText() {
       return `${this.dmsText(this.latitude)}${this.latitude > 0 ? "N" : "S"}`;
@@ -31,6 +34,11 @@ let app = {
         }
       }
       return minPoint;
+    },
+  },
+  watch: {
+    debugData(value) {
+      this.readZData(value);
     },
   },
   methods: {
@@ -117,41 +125,67 @@ let app = {
         str.length % 4 === 0 ? "" : "=".repeat(4 - (str.length % 4));
       return base64Encoded + padding;
     },
-    decodeData(str) {
-      return this.base64URLTobase64(str.split("").reverse().join(""));
+    base64tobase64URL(str) {
+      return str.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
     },
-    fetchData() {
-      const url = new URL(window.location);
-      if (url.searchParams.get("data") !== null) {
-        fetch(atob(this.decodeData(url.searchParams.get("data"))), {
-          headers: {
-            Origin: window.location.host,
-          },
-          cache: "no-store",
-        }).then((response) => {
-          response.json().then((content) => {
-            this.points = content.map((point, i) => {
-              point.id = i;
-              return point;
-            });
-          });
-        });
+    decodeData(str) {
+      return LZString.decompressFromBase64(
+        this.base64URLTobase64(str.split("").reverse().join(""))
+      );
+    },
+    encodeData(str) {
+      return this.base64tobase64URL(LZString.compressToBase64(str))
+        .split("")
+        .reverse()
+        .join("");
+    },
+    readZData(str) {
+      const parts = str.trim().split("\n");
+      const points = [];
+      let currentPoint = null;
+      for (let i = 0; i < parts.length; i++) {
+        switch (i % 4) {
+          case 0:
+            if (currentPoint !== null) {
+              points.push(currentPoint);
+            }
+            currentPoint = {
+              latitude: parseFloat(parts[i]),
+            };
+            break;
+          case 1:
+            currentPoint.longitude = parseFloat(parts[i]);
+            break;
+          case 2:
+            currentPoint.treasure = parts[i];
+            break;
+          case 3:
+            currentPoint.name = parts[i];
+            break;
+        }
       }
+      if (currentPoint !== null) {
+        points.push(currentPoint);
+      }
+      this.points = points.map((point, i) => {
+        point.id = i;
+        return point;
+      });
+      return false;
+    },
+    initApp() {
+      const url = new URL(window.location);
       if (url.searchParams.get("z") !== null) {
-        this.points = JSON.parse(
-          LZString.decompressFromBase64(
-            this.decodeData(url.searchParams.get("z"))
-          )
-        ).map((point, i) => {
-          point.id = i;
-          return point;
-        });
+        this.debug = this.readZData(this.decodeData(url.searchParams.get("z")));
+      }
+      if (this.debug) {
+        this.readZData(this.debugData);
       }
     },
   },
   beforeMount: function () {
     this.accessGeolocation();
-    this.fetchData();
+    this.initApp();
   },
   mounted: function () {
     console.log("app mounted");

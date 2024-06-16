@@ -107,7 +107,7 @@ main {
   margin: auto;
   background-color: var(--background-primary);
   min-height: 100%;
-  font-size: 25px;
+  font-size: larger;
 }
 
 .secret {
@@ -116,6 +116,10 @@ main {
   padding: 0.5em 1em;
   margin: 0 0 0.5em 0;
   background-color: #eeeeee;
+}
+
+textarea {
+  width: 100%;
 }
 
 @media only screen and (min-width: 768px) {
