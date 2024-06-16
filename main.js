@@ -140,6 +140,7 @@ let app = {
         .join("");
     },
     readZData(str) {
+      this.debugData = str;
       const parts = str.trim().split("\n");
       const points = [];
       let currentPoint = null;
