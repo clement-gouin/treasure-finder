@@ -35,11 +35,10 @@ let app = {
   },
   methods: {
     isValidUrl(value) {
-      try { 
-      	return Boolean(new URL(value)); 
-      }
-      catch(e){ 
-      	return false; 
+      try {
+        return Boolean(new URL(value));
+      } catch (e) {
+        return false;
       }
     },
     dmsText(value) {
@@ -112,20 +111,19 @@ let app = {
         navigator.geolocation.watchPosition(this.updatePosition);
       }
     },
-    base64URLdecode(str) {
+    base64URLTobase64(str) {
       const base64Encoded = str.replace(/-/g, "+").replace(/_/g, "/");
       const padding =
         str.length % 4 === 0 ? "" : "=".repeat(4 - (str.length % 4));
-      const base64WithPadding = base64Encoded + padding;
-      return atob(base64WithPadding);
+      return base64Encoded + padding;
     },
     decodeData(str) {
-      return this.base64URLdecode(str.split("").reverse().join(""));
+      return this.base64URLTobase64(str.split("").reverse().join(""));
     },
     fetchData() {
       const url = new URL(window.location);
       if (url.searchParams.get("data") !== null) {
-        fetch(this.decodeData(url.searchParams.get("data")), {
+        fetch(atob(this.decodeData(url.searchParams.get("data"))), {
           headers: {
             Origin: window.location.host,
           },
@@ -137,6 +135,16 @@ let app = {
               return point;
             });
           });
+        });
+      }
+      if (url.searchParams.get("z") !== null) {
+        this.points = JSON.parse(
+          LZString.decompressFromBase64(
+            this.decodeData(url.searchParams.get("z"))
+          )
+        ).map((point, i) => {
+          point.id = i;
+          return point;
         });
       }
     },

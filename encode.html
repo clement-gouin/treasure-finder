@@ -3,34 +3,55 @@
   <head>
     <meta charset="UTF-8" />
     <title>Treasure Finder Encoder</title>
+    <script src="https://unpkg.com/lz-string@1.5/libs/lz-string.min.js"></script>
     <link rel="stylesheet" href="style.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
   </head>
   <body>
     <input id="input" />
     <a id="output" href="#" target="_blank">output link</a>
+    <br />
+    <br />
+    <textarea id="input2" rows="20">
+[{"longitude": 2.2940806701383734, "latitude": 48.85832397934772, "treasure": "You found me !", "name": "Sample"}]</textarea
+    >
+    <a id="output2" href="#" target="_blank">output link</a>
     <script>
-      function base64URLencode(str) {
-        return btoa(str)
-          .replace(/\+/g, "-")
-          .replace(/\//g, "_")
-          .replace(/=+$/, "");
+      function base64tobase64URL(str) {
+        return str.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+      }
+
+      function encodeData(str) {
+        return base64tobase64URL(str).split("").reverse().join("");
       }
 
       function oninput(event) {
-        const data = base64URLencode(event.target.value)
-          .split("")
-          .reverse()
-          .join("");
         document
           .getElementById("output")
           .setAttribute(
             "href",
-            window.location.href.replace("/encode.html", "/?data=" + data)
+            window.location.href.replace(
+              "/encode.html",
+              "/?data=" + encodeData(btoa(event.target.value))
+            )
           );
       }
 
       document.getElementById("input").addEventListener("input", oninput);
+
+      function oninput2(event) {
+        document
+          .getElementById("output2")
+          .setAttribute(
+            "href",
+            window.location.href.replace(
+              "/encode.html",
+              "/?z=" + encodeData(LZString.compressToBase64(event.target.value))
+            )
+          );
+      }
+
+      document.getElementById("input2").addEventListener("input", oninput2);
     </script>
   </body>
 </html>
