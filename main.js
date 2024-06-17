@@ -4,7 +4,7 @@ let app = {
     return {
       debug: true,
       debugData:
-        "48.85832397934772\n2.2940806701383734\nYou found me !\nsample point",
+        "48.85832397934772\n2.2940806701383734\n<i>You found me !</i>\nsample point",
       locationAvailable: false,
       latitude: 0,
       longitude: 0,
