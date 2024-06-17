@@ -87,15 +87,12 @@ h6 {
   --text-secondary: hsl(var(--hue-primary), var(--sat-primary), 30%);
 }
 
-* {
-  font-family: "Courier New", Courier, monospace;
-  color: var(--text-primary);
-}
-
 html,
 body {
   padding: 0;
   max-width: 100%;
+  font-family: "Courier New", Courier, monospace;
+  color: var(--text-primary);
 }
 
 body {
@@ -120,6 +117,10 @@ main {
 
 textarea {
   width: 100%;
+}
+
+a {
+  color: inherit;
 }
 
 @media only screen and (min-width: 768px) {
