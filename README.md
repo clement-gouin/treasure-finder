@@ -1,5 +1,5 @@
 # Treasure Finder
-*Maybe the real treasure is the friends we make along the way *
+*Maybe the real treasure is the friends we make along the way*
 
 ### [Tool link](https://clement-gouin.github.io/treasure-finder/)
 
