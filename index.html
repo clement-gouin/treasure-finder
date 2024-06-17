@@ -18,7 +18,7 @@
       <br>
       <template v-for="(point, i) in points">
         <p class="point" v-bind:style="style(point)">
-        • {{ point.name ?? `Point #${i + 1}` }}: {{ distanceText(distanceToPoint(point)) }}
+        • <span v-if="point.name" v-html="point.name"></span><span v-else>Point #{{i + 1}}</span>: {{ distanceText(distanceToPoint(point)) }}
         </span>
         <p
           class="secret"
