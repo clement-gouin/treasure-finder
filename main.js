@@ -109,7 +109,10 @@ let app = {
     },
     accessGeolocation() {
       if ("geolocation" in navigator) {
-        navigator.geolocation.watchPosition(this.updatePosition);
+        navigator.geolocation.watchPosition(this.updatePosition, () => {}, {
+          maximumAge: 250,
+          enableHighAccuracy: true,
+        });
       }
     },
     base64URLTobase64(str) {
