@@ -9,7 +9,7 @@ let app = {
       latitude: 0,
       longitude: 0,
       points: [],
-      minimum: 20,
+      minimum: 0,
     };
   },
   computed: {
@@ -154,7 +154,7 @@ let app = {
       if (parts.length > 0 && /^\d+$/.test(parts.slice(-1)[0])) {
         this.minimum = parseInt(parts.slice(-1)[0]);
       } else {
-        this.minimum = 20;
+        this.minimum = 10;
       }
       return false;
     },
