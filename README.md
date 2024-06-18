@@ -15,6 +15,11 @@ Point (4 lines):
 4   point name (can be empty)
 ```
 
+Footer (1 line, optional)
+```txt
+1   minimum distance to show secret (int)
+```
+
 ## Sample
 
 ```txt
@@ -26,4 +31,5 @@ sample point #1
 2.1173228217352578
 <i>You found me !</i>
 sample point #2
+20
 ```
