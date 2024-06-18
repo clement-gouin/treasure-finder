@@ -9,7 +9,7 @@ Format is made line by line:
 
 Header (1 line, optional)
 ```txt
-1   minimum distance to show secret (int, default is 10 meters)
+1   minimum distance to show secret (int, default is 20 meters)
 ```
 
 Point (4 lines):

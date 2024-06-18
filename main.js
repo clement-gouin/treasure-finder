@@ -8,6 +8,7 @@ let app = {
       locationAvailable: false,
       latitude: 0,
       longitude: 0,
+      precision: 0,
       points: [],
       minimum: 0,
     };
@@ -21,6 +22,9 @@ let app = {
     },
     longitudeText() {
       return `${this.dmsText(this.longitude)}${this.longitude > 0 ? "E" : "W"}`;
+    },
+    precisionText() {
+      return `${this.precision.toFixed(0)}m`;
     },
     closestPoint() {
       let minDistance = Number.MAX_VALUE;
@@ -81,23 +85,23 @@ let app = {
       if (!this.locationAvailable) {
         return Number.MAX_VALUE;
       }
-      return this.distance(
+      return Math.max(this.precision, this.distance(
         this.latitude,
         this.longitude,
         point.latitude,
         point.longitude
-      );
+      ));
     },
     style(point) {
       if (!this.locationAvailable) {
         return "";
       }
-      const d = this.distanceToPoint(point);
-      const percent = ((100 * d) / 5) * this.minimum;
-      const mix = `color-mix(in srgb, #212121 ${percent}%, #B71C1C)`;
-      return `font-weight: ${
-        point.id === this.closestPoint.id ? "bold" : "normal"
-      }; color: ${d > 1000 ? "inherit" : mix}`;
+      const limit = Math.max(this.minimum, this.precision);
+      const d = this.distanceToPoint(point) - limit;
+      const ratio = d / (4 * limit);
+      const mix = `color-mix(in srgb, #212121 ${100 * ratio}%, #B71C1C)`;
+      return `font-weight: ${point.id === this.closestPoint.id ? "bold" : "normal"
+        }; color: ${ratio >= 1 ? "inherit" : mix}`;
     },
     showApp() {
       document.getElementById("app").setAttribute("style", "");
@@ -106,10 +110,11 @@ let app = {
       this.locationAvailable = true;
       this.latitude = position.coords.latitude;
       this.longitude = position.coords.longitude;
+      this.precision = position.coords.accuracy;
     },
     accessGeolocation() {
       if ("geolocation" in navigator) {
-        navigator.geolocation.watchPosition(this.updatePosition, () => {}, {
+        navigator.geolocation.watchPosition(this.updatePosition, () => { }, {
           maximumAge: 250,
           enableHighAccuracy: true,
         });
@@ -141,7 +146,7 @@ let app = {
       if (parts.length < 3) {
         return true;
       }
-      this.minimum = /^\d+$/.test(parts[0]) ? parseInt(parts.shift()) : 10;
+      this.minimum = /^\d+$/.test(parts[0]) ? parseInt(parts.shift()) : 20;
       this.points = [];
       while (parts.length >= 3) {
         this.points.push({
