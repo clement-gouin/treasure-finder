@@ -9,7 +9,7 @@ let app = {
       latitude: 0,
       longitude: 0,
       points: [],
-      MINIMUM: 10,
+      minimum: 20,
     };
   },
   computed: {
@@ -42,13 +42,6 @@ let app = {
     },
   },
   methods: {
-    isValidUrl(value) {
-      try {
-        return Boolean(new URL(value));
-      } catch (e) {
-        return false;
-      }
-    },
     dmsText(value) {
       const deg = Math.abs(value);
       const min = (deg - Math.floor(deg)) * 60;
@@ -100,7 +93,7 @@ let app = {
         return "";
       }
       const d = this.distanceToPoint(point);
-      const percent = (100 * d) / 1000;
+      const percent = ((100 * d) / 5) * this.minimum;
       const mix = `color-mix(in srgb, #212121 ${percent}%, #B71C1C)`;
       return `font-weight: ${
         point.id === this.closestPoint.id ? "bold" : "normal"
@@ -142,36 +135,24 @@ let app = {
     readZData(str) {
       this.debugData = str;
       const parts = str.trim().split("\n");
-      const points = [];
-      let currentPoint = null;
-      for (let i = 0; i < parts.length; i++) {
-        switch (i % 4) {
-          case 0:
-            if (currentPoint !== null) {
-              points.push(currentPoint);
-            }
-            currentPoint = {
-              latitude: parseFloat(parts[i]),
-            };
-            break;
-          case 1:
-            currentPoint.longitude = parseFloat(parts[i]);
-            break;
-          case 2:
-            currentPoint.treasure = parts[i];
-            break;
-          case 3:
-            currentPoint.name = parts[i];
-            break;
-        }
+      if (parts.length < 3) {
+        return true;
       }
-      if (currentPoint !== null) {
-        points.push(currentPoint);
+      this.points = [];
+      while (parts.length >= 3) {
+        this.points.push({
+          id: this.points.length + 1,
+          latitude: parseFloat(parts.shift()),
+          longitude: parseFloat(parts.shift()),
+          treasure: parts.shift(),
+          name: parts.length > 0 ? parts.shift() : null,
+        });
       }
-      this.points = points.map((point, i) => {
-        point.id = i;
-        return point;
-      });
+      if (parts.length > 0 && /^\d+$/.test(parts.slice(-1)[0])) {
+        this.minimum = parseInt(parts.slice(-1)[0]);
+      } else {
+        this.minimum = 20;
+      }
       return false;
     },
     initApp() {

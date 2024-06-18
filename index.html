@@ -22,7 +22,7 @@
         </span>
         <p
           class="secret"
-          v-if="debug || (locationAvailable && distanceToPoint(point) <= MINIMUM)"
+          v-if="debug || (locationAvailable && distanceToPoint(point) <= minimum)"
           v-html="point.treasure"
         ></p>
       </template>
