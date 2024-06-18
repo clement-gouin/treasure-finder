@@ -7,6 +7,11 @@
 
 Format is made line by line:
 
+Header (1 line, optional)
+```txt
+1   minimum distance to show secret (int, default is 10 meters)
+```
+
 Point (4 lines):
 ```txt
 1   latitude
@@ -15,14 +20,10 @@ Point (4 lines):
 4   point name (can be empty)
 ```
 
-Footer (1 line, optional)
-```txt
-1   minimum distance to show secret (int, default is 10 meters)
-```
-
 ## Sample
 
 ```txt
+20
 48.85832397934772
 2.2940806701383734
 <i>Bite my shinny metal a**</i>
@@ -31,5 +32,4 @@ sample point #1
 2.1173228217352578
 <i>You found me !</i>
 sample point #2
-20
 ```

@@ -141,6 +141,7 @@ let app = {
       if (parts.length < 3) {
         return true;
       }
+      this.minimum = /^\d+$/.test(parts[0]) ? parseInt(parts.shift()) : 10;
       this.points = [];
       while (parts.length >= 3) {
         this.points.push({
@@ -150,11 +151,6 @@ let app = {
           treasure: parts.shift(),
           name: parts.length > 0 ? parts.shift() : null,
         });
-      }
-      if (parts.length > 0 && /^\d+$/.test(parts.slice(-1)[0])) {
-        this.minimum = parseInt(parts.slice(-1)[0]);
-      } else {
-        this.minimum = 10;
       }
       return false;
     },
