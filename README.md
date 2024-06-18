@@ -17,7 +17,7 @@ Point (4 lines):
 
 Footer (1 line, optional)
 ```txt
-1   minimum distance to show secret (int)
+1   minimum distance to show secret (int, default is 10 meters)
 ```
 
 ## Sample
