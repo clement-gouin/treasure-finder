@@ -74,25 +74,41 @@ h6 {
   isolation: isolate;
 }
 
-/* Custom */
+/* 
+=================================================
+CUSTOM STYLE
+================================================= 
+*/
+
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
 
 :root {
   /* https://materialui.co/colors/ */
-  --hue-primary: 199.53;
-  --sat-primary: 18.3%;
-  --background: hsl(var(--hue-primary), var(--sat-primary), 96.08%);
-  --background-primary: hsl(var(--hue-primary), var(--sat-primary), 93.33%);
+  --hue-primary: 240;
+  --sat-primary: 18%;
+  --background: hsl(var(--hue-primary), var(--sat-primary), 96%);
+  --background-primary: hsl(var(--hue-primary), var(--sat-primary), 93%);
+  --background-secondary: hsl(var(--hue-primary), var(--sat-primary), 90%);
   --color-primary: hsl(var(--hue-primary), var(--sat-primary), 50%);
   --text-primary: hsl(var(--hue-primary), var(--sat-primary), 25%);
   --text-secondary: hsl(var(--hue-primary), var(--sat-primary), 30%);
 }
 
+/* 
+=================================================
+https://blog.koley.in/2019/339-bytes-of-responsive-css
+https://www.swyx.io/css-100-bytes
+https://gist.github.com/JoeyBurzynski/617fb6201335779f8424ad9528b72c41
+================================================= 
+*/
+
 html,
 body {
   padding: 0;
   max-width: 100%;
-  font-family: "Courier New", Courier, monospace;
   color: var(--text-primary);
+  font-family: "Roboto", Verdana, serif;
 }
 
 body {
@@ -104,18 +120,39 @@ main {
   margin: auto;
   background-color: var(--background-primary);
   min-height: 100%;
-  font-size: larger;
 }
 
-.secret {
-  display: block;
-  border: 1px solid #212121;
-  padding: 0.5em 1em;
-  margin: 0 0 0.5em 0;
-  background-color: #eeeeee;
+h1 {
+  margin-bottom: 0.5em;
 }
 
-textarea {
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.9em;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 1em 0 0.5em;
+}
+
+p,
+ul,
+ol {
+  margin-bottom: 2em;
+  color: var(--text-secondary);
+}
+
+textarea,
+input[type="text"],
+select,
+.mono {
+  font-family: "Roboto Mono", monospace;
   width: 100%;
 }
 
@@ -130,4 +167,31 @@ a {
   table {
     font-size: inherit;
   }
+}
+
+/* 
+=================================================
+APP STYLE
+================================================= 
+*/
+
+.point {
+  margin-bottom: 0.5em;
+}
+
+.main {
+  font-size: larger;
+}
+
+p.main {
+  margin-bottom: 1em;
+}
+
+.secret {
+  display: block;
+  border: 1px solid var(--color-primary);
+  padding: 1em;
+  margin: 0 0 0.5em 0;
+  border-radius: 0.5em;
+  background-color: var(--background);
 }

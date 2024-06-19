@@ -11,30 +11,29 @@
   </head>
   <body>
     <main id="app" style="display: none">
-      <p>Latitude: {{ locationAvailable ? latitudeText : '???' }}</p>
-      <p>Longitude: {{ locationAvailable ? longitudeText : '???' }}</p>
-      <p>Precision: {{ locationAvailable ? precisionText : '???' }}</p>
-      <br />
+      <p class="mono main">
+        Latitude: {{ locationAvailable ? latitudeText : '???' }}<br>
+        Longitude: {{ locationAvailable ? longitudeText : '???' }}<br>
+        Precision: {{ locationAvailable ? precisionText : '???' }}
+      </p>
       <hr>
       <br>
-      <template v-for="(point, i) in points">
-        <p class="point" v-bind:style="style(point)">
-        • <span v-if="point.name" v-html="point.name"></span><span v-else>Point #{{i + 1}}</span>: {{ distanceText(distanceToPoint(point)) }}
-        </span>
-        <p
-          class="secret"
-          v-if="debug || (locationAvailable && distanceToPoint(point) <= minimum)"
-          v-html="point.treasure"
-        ></p>
-      </template>
+      <div class="main">
+        <template v-for="(point, i) in points">
+          <p class="point" v-bind:style="style(point)">
+          • <span v-if="point.name" v-html="point.name"></span><span v-else>Point #{{i + 1}}</span>: {{ distanceText(distanceToPoint(point)) }}
+          </span>
+          <p
+            class="secret"
+            v-if="debug || (locationAvailable && distanceToPoint(point) <= minimum)"
+            v-html="point.treasure"
+          ></p>
+        </template>
+      </p>
       <div v-if="debug" style="font-size:medium">
-        <br>
         <hr>
-        <br>
         <h1>Treasure finder</h1>
         <textarea v-model="debugData" rows="12"></textarea>
-        <br />
-        <br />
         <a v-if="debugData.length" :href="debugUrl" target="_blank">Output link</a>
       </div>
     </main>
