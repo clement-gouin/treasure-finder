@@ -145,10 +145,13 @@ ol {
 }
 
 textarea,
-input[type="text"],
+input,
 select,
 .mono {
   font-family: "Roboto Mono", monospace;
+}
+
+textarea {
   width: 100%;
   min-width: 100%;
   max-width: 100%;
