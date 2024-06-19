@@ -11,13 +11,22 @@
   </head>
   <body>
     <main id="app" style="display: none">
+      <div v-if="debug">
+        <h1>Treasure Finder</h1>
+        <textarea v-model="debugData" rows="10"></textarea><br>
+        <a v-if="debugData.length" :href="debugUrl" target="_blank"
+          >Output link</a
+        >
+        <br />
+        <br />
+        <hr />
+      </div>
       <p class="mono main">
         Latitude: {{ locationAvailable ? latitudeText : '???' }}<br>
         Longitude: {{ locationAvailable ? longitudeText : '???' }}<br>
         Precision: {{ locationAvailable ? precisionText : '???' }}
       </p>
       <hr>
-      <br>
       <div class="main">
         <template v-for="(point, i) in points">
           <p class="point" v-bind:style="style(point)">
@@ -29,13 +38,6 @@
             v-html="point.treasure"
           ></p>
         </template>
-      </div>
-      <div v-if="debug">
-        <br>
-        <hr>
-        <h1>Treasure finder</h1>
-        <textarea v-model="debugData" rows="12"></textarea>
-        <a v-if="debugData.length" :href="debugUrl" target="_blank">Output link</a>
       </div>
     </main>
   </body>
