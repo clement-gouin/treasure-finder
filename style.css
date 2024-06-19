@@ -154,6 +154,8 @@ select,
 .mono {
   font-family: "Roboto Mono", monospace;
   width: 100%;
+  min-width: 100%;
+  max-width: 100%;
 }
 
 a {
@@ -179,8 +181,9 @@ APP STYLE
   margin-bottom: 0.5em;
 }
 
-p.main {
+.main {
   margin-bottom: 1em;
+  margin-top: 1em;
 }
 
 .secret {
