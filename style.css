@@ -86,7 +86,7 @@ CUSTOM STYLE
 :root {
   /* https://materialui.co/colors/ */
   --hue-primary: 240;
-  --sat-primary: 18%;
+  --sat-primary: 15%;
   --background: hsl(var(--hue-primary), var(--sat-primary), 96%);
   --background-primary: hsl(var(--hue-primary), var(--sat-primary), 93%);
   --background-secondary: hsl(var(--hue-primary), var(--sat-primary), 90%);
@@ -120,10 +120,6 @@ main {
   margin: auto;
   background-color: var(--background-primary);
   min-height: 100%;
-}
-
-h1 {
-  margin-bottom: 0.5em;
 }
 
 table {
