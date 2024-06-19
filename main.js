@@ -85,23 +85,40 @@ let app = {
       if (!this.locationAvailable) {
         return Number.MAX_VALUE;
       }
-      return Math.max(this.precision, this.distance(
-        this.latitude,
-        this.longitude,
-        point.latitude,
-        point.longitude
-      ));
+      return Math.max(
+        this.precision,
+        this.distance(
+          this.latitude,
+          this.longitude,
+          point.latitude,
+          point.longitude
+        )
+      );
     },
-    style(point) {
+    pointStyle(point) {
       if (!this.locationAvailable) {
         return "";
       }
       const limit = Math.max(this.minimum, this.precision);
       const d = this.distanceToPoint(point) - limit;
-      const ratio = d / (4 * limit);
-      const mix = `color-mix(in srgb, #212121 ${100 * ratio}%, #B71C1C)`;
-      return `font-weight: ${point.id === this.closestPoint.id ? "bold" : "normal"
-        }; color: ${ratio >= 1 ? "inherit" : mix}`;
+      const ratio = Math.max(1, d / (4 * limit));
+      return `font-weight: ${
+        point.id === this.closestPoint.id ? "bold" : "normal"
+      }; color: color-mix(in srgb, var(--text-primary) ${
+        100 * ratio
+      }%, #B71C1C)`;
+    },
+    precisionStyle() {
+      if (!this.locationAvailable) {
+        return "";
+      }
+      const ratio = Math.min(
+        1,
+        Math.max(0, this.precision - this.minimum) / (4 * this.minimum)
+      );
+      return `color: color-mix(in srgb, #B71C1C ${
+        100 * ratio
+      }%, var(--text-primary))`;
     },
     showApp() {
       document.getElementById("app").setAttribute("style", "");
@@ -114,7 +131,7 @@ let app = {
     },
     accessGeolocation() {
       if ("geolocation" in navigator) {
-        navigator.geolocation.watchPosition(this.updatePosition, () => { }, {
+        navigator.geolocation.watchPosition(this.updatePosition, () => {}, {
           maximumAge: 250,
           enableHighAccuracy: true,
         });

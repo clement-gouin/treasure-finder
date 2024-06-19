@@ -24,12 +24,12 @@
       <p class="mono main">
         Latitude: {{ locationAvailable ? latitudeText : '???' }}<br>
         Longitude: {{ locationAvailable ? longitudeText : '???' }}<br>
-        Precision: {{ locationAvailable ? precisionText : '???' }}
+        <span :style="precisionStyle()">Precision: {{ locationAvailable ? precisionText : '???' }}</span>
       </p>
       <hr>
       <div class="main">
         <template v-for="(point, i) in points">
-          <p class="point" v-bind:style="style(point)">
+          <p class="point" v-bind:style="pointStyle(point)">
           • <span v-if="point.name" v-html="point.name"></span><span v-else>Point #{{i + 1}}</span>: {{ distanceText(distanceToPoint(point)) }}
           </span>
           <p
