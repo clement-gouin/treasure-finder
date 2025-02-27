@@ -128,15 +128,6 @@ table {
   font-size: 0.9em;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  margin: 1em 0 0.5em;
-}
-
 p,
 ul,
 ol {
@@ -188,8 +179,29 @@ APP STYLE
 .secret {
   display: block;
   border: 1px solid var(--color-primary);
-  padding: 1em;
+  padding: 0.5em;
   margin: 0 0 0.5em 0;
   border-radius: 0.5em;
   background-color: var(--background);
+  font-size: 1.333em;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+svg.lucide {
+  display: inline-block;
+  vertical-align: text-top;
+}
+
+b .lucide,
+.bold .lucide,
+h1 .lucide,
+h2 .lucide,
+h3 .lucide,
+h4 .lucide,
+h5 .lucide,
+h6 .lucide {
+  stroke-width: 3;
 }

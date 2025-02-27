@@ -102,11 +102,15 @@ let app = {
       const limit = Math.max(this.minimum, this.precision);
       const d = this.distanceToPoint(point) - limit;
       const ratio = Math.max(1, d / (4 * limit));
-      return `font-weight: ${
-        point.id === this.closestPoint.id ? "bold" : "normal"
-      }; color: color-mix(in srgb, var(--text-primary) ${
+      return `color: color-mix(in srgb, var(--text-primary) ${
         100 * ratio
       }%, #B71C1C)`;
+    },
+    closest(point) {
+      if (!this.locationAvailable) {
+        return false;
+      }
+      return point.id === this.closestPoint.id;
     },
     precisionStyle() {
       if (!this.locationAvailable) {
@@ -185,6 +189,15 @@ let app = {
         this.readZData(this.debugData);
       }
     },
+    updateIcons() {
+      lucide.createIcons({
+        nameAttr: "icon",
+        attrs: {
+          width: "1.1em",
+          height: "1.1em",
+        },
+      });
+    },
   },
   beforeMount: function () {
     this.accessGeolocation();
@@ -193,6 +206,10 @@ let app = {
   mounted: function () {
     console.log("app mounted");
     setTimeout(this.showApp);
+    this.updateIcons();
+  },
+  updated: function () {
+    this.updateIcons();
   },
 };
 

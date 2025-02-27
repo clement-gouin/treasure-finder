@@ -20,21 +20,28 @@ Point (4 lines):
 4   point name (can be empty)
 ```
 
-## Sample
+## Samples
+
+```txt
+48.85832397934772
+2.2940806701383734
+<i>You found me !</i>
+sample point
+```
 
 ```txt
 20
 48.85832397934772
 2.2940806701383734
-<i>Bite my shinny metal a**</i>
-sample point #1
+<i icon=bot></i> <i>Bite my shinny metal a**</i>
+<i icon=map-pin></i> sample point #1
 48.805777275710795
 2.1173228217352578
-<i>You found me !</i>
-sample point #2
+<i icon=circle-check-big></i> <i>You found me !</i>
+<i icon=map-pin></i> sample point #2
 ```
 
 ## Tips
 
 * [Material design colors](https://materialui.co/colors/) are available, you can use `class="red-500"` on your HTML
-* [FontAwesome icons](https://fontawesome.com/search?ic=free) are available, you can use `<i class="fas fa-house"></i>` on your HTML
+* [Lucide icons](https://lucide.dev/icons) are available, you can use `<i icon=house></i>` on your HTML
