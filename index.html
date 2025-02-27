@@ -16,7 +16,32 @@
     <main id="app" style="display: none">
       <div v-if="debug">
         <h1><i icon="shovel"></i> Treasure Finder</h1>
-        <textarea v-model="debugData" rows="10"></textarea><br>
+        <div class="editor">
+          <textarea
+            class="numbers"
+            :cols="editor.numbersCols"
+            rows="10"
+            readonly
+            ref="numbers"
+            v-model="editor.numbersText"
+          ></textarea>
+          <textarea
+            class="code"
+            v-model="debugData"
+            ref="code"
+            rows="10"
+          ></textarea>
+          <div class="overlay">
+            <textarea :cols="editor.numbersCols" rows="10" readonly></textarea>
+            <textarea
+              ref="overlay"
+              class="code"
+              rows="10"
+              readonly
+              v-model="editor.overlayText"
+            ></textarea>
+          </div>
+        </div>
         <a v-if="debugUrl" :href="debugUrl" target="_blank"
           ><i icon="link"></i> Output link</a
         >

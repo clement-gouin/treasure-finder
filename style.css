@@ -142,12 +142,6 @@ select,
   font-family: "Roboto Mono", monospace;
 }
 
-textarea {
-  width: 100%;
-  min-width: 100%;
-  max-width: 100%;
-}
-
 a {
   color: inherit;
 }
@@ -204,4 +198,44 @@ h4 .lucide,
 h5 .lucide,
 h6 .lucide {
   stroke-width: 3;
+}
+
+.editor {
+  display: flex;
+  overflow-y: scroll;
+  position: relative;
+}
+
+.editor textarea {
+  margin: 0;
+  resize: none;
+  outline: none;
+  font-size: 13px;
+  text-wrap: nowrap;
+}
+
+.code {
+  flex-grow: 1;
+}
+
+.numbers {
+  overflow: hidden;
+  border: 1px solid #0000;
+  background: none;
+  text-align: right;
+  pointer-events: none;
+}
+
+.overlay {
+  display: flex;
+  position: absolute;
+  width: 100%;
+  opacity: 50%;
+  pointer-events: none;
+}
+
+.overlay > textarea {
+  border: 1px solid #0000;
+  overflow: hidden;
+  background: none;
 }

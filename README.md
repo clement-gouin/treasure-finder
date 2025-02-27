@@ -9,15 +9,15 @@ Format is made line by line:
 
 Header (1 line, optional)
 ```txt
-1   minimum distance to show secret (int, default is 20 meters)
+1   Minimum distance to show secret (int, default is 20 meters)
 ```
 
 Point (4 lines):
 ```txt
-1   latitude
-2   longitude
-3   secret (html)
-4   point name (can be empty)
+1   Latitude (float)
+2   Longitude (float)
+3   Secret (html)
+4   Point name (html, can be empty)
 ```
 
 ## Samples

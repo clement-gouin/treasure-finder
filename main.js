@@ -1,4 +1,15 @@
 /* exported app, utils */
+
+const HELP_HEADER = [
+  "Minimum distance to show secret (int, optional, default is 20 meters)",
+];
+const HELP_PART = [
+  "Latitude (float)",
+  "Longitude (float)",
+  "Secret (html)",
+  "Point name (html, can be empty)",
+];
+
 let app = {
   data() {
     return {
@@ -13,6 +24,12 @@ let app = {
       minimum: 0,
       debugUrl: "",
       closestPointId: null,
+      hasMinimum: false,
+      editor: {
+        numbersCols: 0,
+        numbersText: "",
+        overlayText: "",
+      },
     };
   },
   computed: {
@@ -31,6 +48,7 @@ let app = {
       this.readZData(value);
       this.updateDebugUrl(value);
       this.closestPointId = this.closestPoint().id;
+      this.updateEditor(value);
     },
   },
   methods: {
@@ -51,6 +69,29 @@ let app = {
         }
       }
       return minPoint;
+    },
+    updateEditor(value) {
+      const debugDataSplit = value.split("\n");
+      let size = this.hasMinimum ? 1 : 0 + HELP_PART.length;
+      while (debugDataSplit.length > size) {
+        size += HELP_PART.length;
+      }
+      const lines = Array(size).fill(0);
+      console.log(lines.length);
+      this.editor.numbersText = lines.map((v, i) => `${i + 1}.`).join("\n");
+      this.editor.overlayText = lines
+        .map((v, i) => {
+          if (debugDataSplit.length > i && debugDataSplit[i].trim().length) {
+            return " ".repeat(debugDataSplit[i].length);
+          }
+          if (this.hasMinimum && i === 0) {
+            return HELP_HEADER[0];
+          }
+          return HELP_PART[(i - (this.hasMinimum ? 1 : 0)) % HELP_PART.length];
+        })
+        .join("\n");
+      console.log(this.editor.overlayText);
+      this.editor.numbersCols = lines.length.toString().length + 1;
     },
     dmsText(value) {
       const deg = Math.abs(value);
@@ -170,11 +211,12 @@ let app = {
     },
     readZData(str) {
       this.debugData = str;
-      const parts = str.trim().split("\n");
+      const parts = str.split("\n");
+      this.hasMinimum = parts[0].trim().length === 0 || /^\d+$/.test(parts[0]);
       if (parts.length < 3) {
         return true;
       }
-      this.minimum = /^\d+$/.test(parts[0]) ? parseInt(parts.shift()) : 20;
+      this.minimum = this.hasMinimum ? parseInt(parts.shift()) : 20;
       this.points = [];
       while (parts.length >= 3) {
         this.points.push({
@@ -195,6 +237,7 @@ let app = {
       if (this.debug) {
         this.readZData(this.debugData);
         this.updateDebugUrl(this.debugData);
+        this.updateEditor(this.debugData);
       }
     },
     updateIcons() {
@@ -215,6 +258,11 @@ let app = {
     console.log("app mounted");
     setTimeout(this.showApp);
     this.updateIcons();
+    this.$refs.code?.addEventListener("scroll", () => {
+      this.$refs.numbers.scrollTop = this.$refs.code.scrollTop;
+      this.$refs.overlay.scrollTop = this.$refs.code.scrollTop;
+      this.$refs.overlay.scrollLeft = this.$refs.code.scrollLeft;
+    });
   },
   updated: function () {
     this.updateIcons();
