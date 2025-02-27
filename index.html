@@ -17,7 +17,7 @@
       <div v-if="debug">
         <h1><i icon="shovel"></i> Treasure Finder</h1>
         <textarea v-model="debugData" rows="10"></textarea><br>
-        <a v-if="debugData.length" :href="debugUrl" target="_blank"
+        <a v-if="debugUrl" :href="debugUrl" target="_blank"
           ><i icon="link"></i> Output link</a
         >
         <br />

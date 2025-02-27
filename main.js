@@ -11,12 +11,10 @@ let app = {
       precision: 0,
       points: [],
       minimum: 0,
+      debugUrl: "",
     };
   },
   computed: {
-    debugUrl() {
-      return window.location.pathname + "?z=" + this.encodeData(this.debugData);
-    },
     latitudeText() {
       return `${this.dmsText(this.latitude)}${this.latitude > 0 ? "N" : "S"}`;
     },
@@ -43,9 +41,15 @@ let app = {
   watch: {
     debugData(value) {
       this.readZData(value);
+      this.updateDebugUrl(value);
     },
   },
   methods: {
+    updateDebugUrl(value) {
+      this.debugUrl = value.trim().length
+        ? window.location.pathname + "?z=" + this.encodeData(value.trim())
+        : "";
+    },
     dmsText(value) {
       const deg = Math.abs(value);
       const min = (deg - Math.floor(deg)) * 60;
@@ -187,6 +191,7 @@ let app = {
       }
       if (this.debug) {
         this.readZData(this.debugData);
+        this.updateDebugUrl(this.debugData);
       }
     },
     updateIcons() {
