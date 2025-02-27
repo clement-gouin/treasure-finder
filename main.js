@@ -12,6 +12,7 @@ let app = {
       points: [],
       minimum: 0,
       debugUrl: "",
+      closestPointId: null,
     };
   },
   computed: {
@@ -23,6 +24,20 @@ let app = {
     },
     precisionText() {
       return `${this.precision.toFixed(0)}m`;
+    },
+  },
+  watch: {
+    debugData(value) {
+      this.readZData(value);
+      this.updateDebugUrl(value);
+      this.closestPointId = this.closestPoint().id;
+    },
+  },
+  methods: {
+    updateDebugUrl(value) {
+      this.debugUrl = value.trim().length
+        ? window.location.pathname + "?z=" + this.encodeData(value.trim())
+        : "";
     },
     closestPoint() {
       let minDistance = Number.MAX_VALUE;
@@ -36,19 +51,6 @@ let app = {
         }
       }
       return minPoint;
-    },
-  },
-  watch: {
-    debugData(value) {
-      this.readZData(value);
-      this.updateDebugUrl(value);
-    },
-  },
-  methods: {
-    updateDebugUrl(value) {
-      this.debugUrl = value.trim().length
-        ? window.location.pathname + "?z=" + this.encodeData(value.trim())
-        : "";
     },
     dmsText(value) {
       const deg = Math.abs(value);
@@ -114,7 +116,7 @@ let app = {
       if (!this.locationAvailable) {
         return false;
       }
-      return point.id === this.closestPoint.id;
+      return point.id === this.closestPointId;
     },
     precisionStyle() {
       if (!this.locationAvailable) {
@@ -136,6 +138,7 @@ let app = {
       this.latitude = position.coords.latitude;
       this.longitude = position.coords.longitude;
       this.precision = position.coords.accuracy;
+      this.closestPointId = this.closestPoint().id;
     },
     accessGeolocation() {
       if ("geolocation" in navigator) {
