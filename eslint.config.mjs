@@ -24,6 +24,8 @@ export default [
       "no-ternary": "off",
       "one-var": "off",
       "max-statements": ["warn", 50],
+      "max-params": ["warn", 5],
+      "max-lines": "off",
     },
   },
   eslintConfigPrettier,

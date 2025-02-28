@@ -1,4 +1,4 @@
-/* exported app, utils */
+import { createApp } from "vue";
 
 const HELP_HEADER = [
   "Minimum distance to show secret (int, optional, default is 20 meters)",
@@ -17,13 +17,13 @@ const DEFAULT_VALUES = {
 
 const utils = {
   base64URLTobase64(str) {
-    const base64Encoded = str.replace(/-/g, "+").replace(/_/g, "/");
+    const base64Encoded = str.replace(/-/gu, "+").replace(/_/gu, "/");
     const padding =
       str.length % 4 === 0 ? "" : "=".repeat(4 - (str.length % 4));
     return base64Encoded + padding;
   },
   base64tobase64URL(str) {
-    return str.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+    return str.replace(/\+/gu, "-").replace(/\//gu, "_").replace(/[=]+$/u, "");
   },
   decodeData(str) {
     return LZString.decompressFromBase64(
@@ -38,20 +38,20 @@ const utils = {
       .join("");
   },
   distance(lat1, lon1, lat2, lon2) {
-    const R = 6371e3;
+    const earthRadius = 6371e3;
     const φ1 = (lat1 * Math.PI) / 180;
     const φ2 = (lat2 * Math.PI) / 180;
     const Δφ = ((lat2 - lat1) * Math.PI) / 180;
     const Δλ = ((lon2 - lon1) * Math.PI) / 180;
-    const a =
+    const dist2 =
       Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
       Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
+    const angle = 2 * Math.atan2(Math.sqrt(dist2), Math.sqrt(1 - dist2));
+    return earthRadius * angle;
   },
 };
 
-let app = {
+const app = createApp({
   data() {
     return {
       debug: true,
@@ -102,6 +102,17 @@ let app = {
       this.closestPointId = this.closestPoint().id;
     },
   },
+  beforeMount() {
+    this.accessGeolocation();
+    this.initApp();
+  },
+  mounted() {
+    setTimeout(this.showApp);
+    this.updateIcons();
+  },
+  updated() {
+    this.updateIcons();
+  },
   methods: {
     showApp() {
       document.getElementById("app").setAttribute("style", "");
@@ -130,7 +141,7 @@ let app = {
     },
     updateDebugUrl(value) {
       this.debugUrl = value.trim().length
-        ? window.location.pathname + "?z=" + utils.encodeData(value.trim())
+        ? `${window.location.pathname}?z=${utils.encodeData(value.trim())}`
         : "";
     },
     updateEditor(value) {
@@ -141,22 +152,30 @@ let app = {
       }
       const lines = Array(size).fill(0);
       this.editor.numbersText = debugDataSplit
-        .map((v, i) => `${i + 1}.`)
+        .map((_value, index) => `${index + 1}.`)
         .join("\n");
       this.editor.overlayText = lines
-        .map((v, i) => {
-          if (debugDataSplit.length > i && debugDataSplit[i].trim().length) {
-            return " ".repeat(debugDataSplit[i].length);
+        .map((_value, index) => {
+          if (
+            debugDataSplit.length > index &&
+            debugDataSplit[index].trim().length
+          ) {
+            return " ".repeat(debugDataSplit[index].length);
           }
-          if (this.parsed.hasMinimum && i === 0) {
+          if (this.parsed.hasMinimum && index === 0) {
             return HELP_HEADER[0];
           }
           return HELP_PART[
-            (i - (this.parsed.hasMinimum ? 1 : 0)) % HELP_PART.length
+            (index - (this.parsed.hasMinimum ? 1 : 0)) % HELP_PART.length
           ];
         })
         .join("\n");
       this.editor.numbersCols = lines.length.toString().length + 1;
+    },
+    scrollEditor() {
+      this.$refs.numbers.scrollTop = this.$refs.code.scrollTop;
+      this.$refs.overlay.scrollTop = this.$refs.code.scrollTop;
+      this.$refs.overlay.scrollLeft = this.$refs.code.scrollLeft;
     },
     readZData(str) {
       this.debugData = str;
@@ -165,10 +184,10 @@ let app = {
       if (parts.length < 3) {
         return true;
       }
-      if (!/^\d+$/.test(parts[0])) {
-        this.parsed.hasMinimum = parts[0].trim().length === 0;
+      if (/^\d+$/u.test(parts[0])) {
+        this.parsed.minimum = parseInt(parts.shift(), 10);
       } else {
-        this.parsed.minimum = parseInt(parts.shift());
+        this.parsed.hasMinimum = parts[0].trim().length === 0;
       }
       while (parts.length >= 3) {
         this.parsed.points.push({
@@ -183,8 +202,8 @@ let app = {
     },
     closestPoint() {
       let minDistance = Number.MAX_VALUE;
-      let minPoint = this.parsed.points[0];
-      for (let index = 0; index < this.parsed.points.length; index++) {
+      let [minPoint] = this.parsed.points;
+      for (let index = 0; index < this.parsed.points.length; index += 1) {
         const point = this.parsed.points[index];
         const distance = this.distanceToPoint(point);
         if (distance < minDistance) {
@@ -236,8 +255,8 @@ let app = {
         return "";
       }
       const limit = Math.max(this.parsed.minimum, this.location.precision);
-      const d = this.distanceToPoint(point) - limit;
-      const ratio = Math.max(1, d / (4 * limit));
+      const dist = this.distanceToPoint(point) - limit;
+      const ratio = Math.max(1, dist / (4 * limit));
       return `color: color-mix(in srgb, var(--text-primary) ${
         100 * ratio
       }%, #B71C1C)`;
@@ -272,33 +291,21 @@ let app = {
     },
     accessGeolocation() {
       if ("geolocation" in navigator) {
-        navigator.geolocation.watchPosition(this.updatePosition, () => {}, {
-          maximumAge: 250,
-          enableHighAccuracy: true,
-        });
+        navigator.geolocation.watchPosition(
+          this.updatePosition,
+          () => {
+            this.position.available = false;
+          },
+          {
+            maximumAge: 250,
+            enableHighAccuracy: true,
+          }
+        );
       }
     },
   },
-  beforeMount: function () {
-    this.accessGeolocation();
-    this.initApp();
-  },
-  mounted: function () {
-    console.log("app mounted");
-    setTimeout(this.showApp);
-    this.updateIcons();
-    this.$refs.code?.addEventListener("scroll", () => {
-      this.$refs.numbers.scrollTop = this.$refs.code.scrollTop;
-      this.$refs.overlay.scrollTop = this.$refs.code.scrollTop;
-      this.$refs.overlay.scrollLeft = this.$refs.code.scrollLeft;
-    });
-  },
-  updated: function () {
-    this.updateIcons();
-  },
-};
+});
 
 window.onload = () => {
-  app = Vue.createApp(app);
   app.mount("#app");
 };

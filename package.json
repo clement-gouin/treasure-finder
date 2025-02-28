@@ -1,18 +1,18 @@
 {
-  "name": "z-app",
+  "name": "treasure-finder",
   "version": "1.0.0",
-  "description": "*Working template for URL encoded app*",
+  "description": "*Maybe the real treasure is the friends we make along the way*",
   "scripts": {
     "lint": "eslint",
     "fix": "eslint --fix"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/clement-gouin/z-app.git"
+    "url": "git+https://github.com/clement-gouin/treasure-finder.git"
   },
   "author": "clement-gouin",
   "license": "ISC",
-  "homepage": "https://github.com/clement-gouin/z-app#readme",
+  "homepage": "https://github.com/clement-gouin/treasure-finder#readme",
   "devDependencies": {
     "@eslint/js": "^9.21.0",
     "eslint": "^9.21.0",
