@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <title>Treasure Finder</title>
     <link rel="stylesheet" href="style.css" />
-    <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="material-colors.css" />
     <script src="https://unpkg.com/lz-string@1.5"></script>
     <script src="https://unpkg.com/lucide@0"></script>
@@ -36,7 +35,7 @@
             v-model="debugData"
             ref="code"
             rows="10"
-            @scroll="scrollEditor"
+            @scroll="editorScroll"
           ></textarea>
           <div class="overlay">
             <textarea :cols="editor.numbersCols" rows="10" readonly></textarea>

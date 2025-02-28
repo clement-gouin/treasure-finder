@@ -175,7 +175,7 @@ const app = createApp({
         .join("\n");
       this.editor.numbersCols = lines.length.toString().length + 1;
     },
-    scrollEditor() {
+    editorScroll() {
       this.$refs.numbers.scrollTop = this.$refs.code.scrollTop;
       this.$refs.overlay.scrollTop = this.$refs.code.scrollTop;
       this.$refs.overlay.scrollLeft = this.$refs.code.scrollLeft;
