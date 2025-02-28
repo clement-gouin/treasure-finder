@@ -77,7 +77,6 @@ let app = {
         size += HELP_PART.length;
       }
       const lines = Array(size).fill(0);
-      console.log(lines.length);
       this.editor.numbersText = lines.map((v, i) => `${i + 1}.`).join("\n");
       this.editor.overlayText = lines
         .map((v, i) => {
@@ -90,7 +89,6 @@ let app = {
           return HELP_PART[(i - (this.hasMinimum ? 1 : 0)) % HELP_PART.length];
         })
         .join("\n");
-      console.log(this.editor.overlayText);
       this.editor.numbersCols = lines.length.toString().length + 1;
     },
     dmsText(value) {
