@@ -37,6 +37,9 @@ const utils = {
       .reverse()
       .join("");
   },
+  clone(obj) {
+    return JSON.parse(JSON.stringify(obj));
+  },
   distance(lat1, lon1, lat2, lon2) {
     const earthRadius = 6371e3;
     const φ1 = (lat1 * Math.PI) / 180;
@@ -179,7 +182,7 @@ const app = createApp({
     },
     readZData(str) {
       this.debugData = str;
-      this.parsed = DEFAULT_VALUES;
+      this.parsed = utils.clone(DEFAULT_VALUES);
       const parts = str.split("\n");
       if (parts.length < 3) {
         return true;
