@@ -1,9 +1,9 @@
-# Treasure Finder
+# [Z] Treasure Finder
 *Maybe the real treasure is the friends we make along the way*
 
 > Part of the [Z-Apps](https://github.com/clement-gouin/z-app)
 
-### [Tool link](https://clement-gouin.github.io/treasure-finder/)
+### [Tool link](https://clement-gouin.github.io/z-treasure-finder/)
 
 ## Data format
 
