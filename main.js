@@ -149,7 +149,8 @@ const app = createApp({
     },
     updateEditor(value) {
       const debugDataSplit = value.split("\n");
-      let size = (this.parsed.hasMinimum ? 1 : 0) + HELP_PART.length;
+      const headerSize = HELP_HEADER.length - (this.parsed.hasMinimum ? 0 : 1);
+      let size = headerSize + HELP_PART.length;
       while (debugDataSplit.length > size) {
         size += HELP_PART.length;
       }
@@ -165,12 +166,10 @@ const app = createApp({
           ) {
             return " ".repeat(debugDataSplit[index].length);
           }
-          if (this.parsed.hasMinimum && index === 0) {
-            return HELP_HEADER[0];
+          if (headerSize > index) {
+            return HELP_HEADER[index];
           }
-          return HELP_PART[
-            (index - (this.parsed.hasMinimum ? 1 : 0)) % HELP_PART.length
-          ];
+          return HELP_PART[(index - headerSize) % HELP_PART.length];
         })
         .join("\n");
       this.editor.numbersCols = lines.length.toString().length + 1;
