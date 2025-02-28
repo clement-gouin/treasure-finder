@@ -9,6 +9,11 @@ const HELP_PART = [
   "Secret (html)",
   "Point name (html, can be empty)",
 ];
+const DEFAULT_VALUES = {
+  hasMinimum: true,
+  minimum: 20,
+  points: [],
+};
 
 const utils = {
   base64URLTobase64(str) {
@@ -58,11 +63,7 @@ let app = {
         numbersText: "",
         overlayText: "",
       },
-      parsed: {
-        hasMinimum: false,
-        minimum: 20,
-        points: [],
-      },
+      parsed: DEFAULT_VALUES,
       location: {
         available: false,
         latitude: 0,
@@ -159,16 +160,16 @@ let app = {
     },
     readZData(str) {
       this.debugData = str;
+      this.parsed = DEFAULT_VALUES;
       const parts = str.split("\n");
-      this.parsed.hasMinimum =
-        parts[0].trim().length === 0 || /^\d+$/.test(parts[0]);
       if (parts.length < 3) {
         return true;
       }
-      this.parsed.minimum = this.parsed.hasMinimum
-        ? parseInt(parts.shift())
-        : 20;
-      this.parsed.points = [];
+      if (!/^\d+$/.test(parts[0])) {
+        this.parsed.hasMinimum = parts[0].trim().length === 0;
+      } else {
+        this.parsed.minimum = parseInt(parts.shift());
+      }
       while (parts.length >= 3) {
         this.parsed.points.push({
           id: this.parsed.points.length + 1,
