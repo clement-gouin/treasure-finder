@@ -10,58 +10,181 @@ const HELP_PART = [
   "Point name (html, can be empty)",
 ];
 
+const utils = {
+  base64URLTobase64(str) {
+    const base64Encoded = str.replace(/-/g, "+").replace(/_/g, "/");
+    const padding =
+      str.length % 4 === 0 ? "" : "=".repeat(4 - (str.length % 4));
+    return base64Encoded + padding;
+  },
+  base64tobase64URL(str) {
+    return str.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  },
+  decodeData(str) {
+    return LZString.decompressFromBase64(
+      utils.base64URLTobase64(str.split("").reverse().join(""))
+    );
+  },
+  encodeData(str) {
+    return utils
+      .base64tobase64URL(LZString.compressToBase64(str))
+      .split("")
+      .reverse()
+      .join("");
+  },
+  distance(lat1, lon1, lat2, lon2) {
+    const R = 6371e3;
+    const φ1 = (lat1 * Math.PI) / 180;
+    const φ2 = (lat2 * Math.PI) / 180;
+    const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+    const Δλ = ((lon2 - lon1) * Math.PI) / 180;
+    const a =
+      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  },
+};
+
 let app = {
   data() {
     return {
       debug: true,
       debugData:
         "48.85832397934772\n2.2940806701383734\n<i>You found me !</i>\nsample point",
-      locationAvailable: false,
-      latitude: 0,
-      longitude: 0,
-      precision: 0,
-      points: [],
-      minimum: 0,
       debugUrl: "",
-      closestPointId: null,
-      hasMinimum: false,
       editor: {
         numbersCols: 0,
         numbersText: "",
         overlayText: "",
       },
+      parsed: {
+        hasMinimum: false,
+        minimum: 20,
+        points: [],
+      },
+      location: {
+        available: false,
+        latitude: 0,
+        longitude: 0,
+        precision: 0,
+      },
+      closestPointId: null,
     };
   },
   computed: {
     latitudeText() {
-      return `${this.dmsText(this.latitude)}${this.latitude > 0 ? "N" : "S"}`;
+      return this.location.available
+        ? `${this.dmsText(this.location.latitude)}${
+            this.location.latitude > 0 ? "N" : "S"
+          }`
+        : "???";
     },
     longitudeText() {
-      return `${this.dmsText(this.longitude)}${this.longitude > 0 ? "E" : "W"}`;
+      return this.location.available
+        ? `${this.dmsText(this.location.longitude)}${
+            this.location.longitude > 0 ? "E" : "W"
+          }`
+        : "???";
     },
     precisionText() {
-      return `${this.precision.toFixed(0)}m`;
+      return this.location.available
+        ? `${this.location.precision.toFixed(0)}m`
+        : "???";
     },
   },
   watch: {
     debugData(value) {
       this.readZData(value);
       this.updateDebugUrl(value);
-      this.closestPointId = this.closestPoint().id;
       this.updateEditor(value);
+      this.closestPointId = this.closestPoint().id;
     },
   },
   methods: {
+    showApp() {
+      document.getElementById("app").setAttribute("style", "");
+    },
+    initApp() {
+      const url = new URL(window.location);
+      if (url.searchParams.get("z") !== null) {
+        this.debug = this.readZData(
+          utils.decodeData(url.searchParams.get("z"))
+        );
+      }
+      if (this.debug) {
+        this.readZData(this.debugData);
+        this.updateEditor(this.debugData);
+        this.updateDebugUrl(this.debugData);
+      }
+    },
+    updateIcons() {
+      lucide.createIcons({
+        nameAttr: "icon",
+        attrs: {
+          width: "1.1em",
+          height: "1.1em",
+        },
+      });
+    },
     updateDebugUrl(value) {
       this.debugUrl = value.trim().length
-        ? window.location.pathname + "?z=" + this.encodeData(value.trim())
+        ? window.location.pathname + "?z=" + utils.encodeData(value.trim())
         : "";
+    },
+    updateEditor(value) {
+      const debugDataSplit = value.split("\n");
+      let size = (this.parsed.hasMinimum ? 1 : 0) + HELP_PART.length;
+      while (debugDataSplit.length > size) {
+        size += HELP_PART.length;
+      }
+      const lines = Array(size).fill(0);
+      this.editor.numbersText = debugDataSplit
+        .map((v, i) => `${i + 1}.`)
+        .join("\n");
+      this.editor.overlayText = lines
+        .map((v, i) => {
+          if (debugDataSplit.length > i && debugDataSplit[i].trim().length) {
+            return " ".repeat(debugDataSplit[i].length);
+          }
+          if (this.parsed.hasMinimum && i === 0) {
+            return HELP_HEADER[0];
+          }
+          return HELP_PART[
+            (i - (this.parsed.hasMinimum ? 1 : 0)) % HELP_PART.length
+          ];
+        })
+        .join("\n");
+      this.editor.numbersCols = lines.length.toString().length + 1;
+    },
+    readZData(str) {
+      this.debugData = str;
+      const parts = str.split("\n");
+      this.parsed.hasMinimum =
+        parts[0].trim().length === 0 || /^\d+$/.test(parts[0]);
+      if (parts.length < 3) {
+        return true;
+      }
+      this.parsed.minimum = this.parsed.hasMinimum
+        ? parseInt(parts.shift())
+        : 20;
+      this.parsed.points = [];
+      while (parts.length >= 3) {
+        this.parsed.points.push({
+          id: this.parsed.points.length + 1,
+          latitude: parseFloat(parts.shift()),
+          longitude: parseFloat(parts.shift()),
+          treasure: parts.shift(),
+          name: parts.length > 0 ? parts.shift() : null,
+        });
+      }
+      return false;
     },
     closestPoint() {
       let minDistance = Number.MAX_VALUE;
-      let minPoint = this.points[0];
-      for (let index = 0; index < this.points.length; index++) {
-        const point = this.points[index];
+      let minPoint = this.parsed.points[0];
+      for (let index = 0; index < this.parsed.points.length; index++) {
+        const point = this.parsed.points[index];
         const distance = this.distanceToPoint(point);
         if (distance < minDistance) {
           minDistance = distance;
@@ -69,27 +192,6 @@ let app = {
         }
       }
       return minPoint;
-    },
-    updateEditor(value) {
-      const debugDataSplit = value.split("\n");
-      let size = this.hasMinimum ? 1 : 0 + HELP_PART.length;
-      while (debugDataSplit.length > size) {
-        size += HELP_PART.length;
-      }
-      const lines = Array(size).fill(0);
-      this.editor.numbersText = lines.map((v, i) => `${i + 1}.`).join("\n");
-      this.editor.overlayText = lines
-        .map((v, i) => {
-          if (debugDataSplit.length > i && debugDataSplit[i].trim().length) {
-            return " ".repeat(debugDataSplit[i].length);
-          }
-          if (this.hasMinimum && i === 0) {
-            return HELP_HEADER[0];
-          }
-          return HELP_PART[(i - (this.hasMinimum ? 1 : 0)) % HELP_PART.length];
-        })
-        .join("\n");
-      this.editor.numbersCols = lines.length.toString().length + 1;
     },
     dmsText(value) {
       const deg = Math.abs(value);
@@ -100,7 +202,7 @@ let app = {
         .padStart(2, "0")}'${sec.toFixed(2).padStart(5, "0")}"`;
     },
     distanceText(value) {
-      if (!this.locationAvailable) {
+      if (!this.location.available) {
         return "???";
       }
       if (value > 100_000) {
@@ -114,37 +216,25 @@ let app = {
       }
       return `${value.toFixed(0)}m`;
     },
-    distance(lat1, lon1, lat2, lon2) {
-      const R = 6371e3;
-      const φ1 = (lat1 * Math.PI) / 180;
-      const φ2 = (lat2 * Math.PI) / 180;
-      const Δφ = ((lat2 - lat1) * Math.PI) / 180;
-      const Δλ = ((lon2 - lon1) * Math.PI) / 180;
-      const a =
-        Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-        Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      return R * c;
-    },
     distanceToPoint(point) {
-      if (!this.locationAvailable) {
+      if (!this.location.available) {
         return Number.MAX_VALUE;
       }
       return Math.max(
-        this.precision,
-        this.distance(
-          this.latitude,
-          this.longitude,
+        this.location.precision,
+        utils.distance(
+          this.location.latitude,
+          this.location.longitude,
           point.latitude,
           point.longitude
         )
       );
     },
     pointStyle(point) {
-      if (!this.locationAvailable) {
+      if (!this.location.available) {
         return "";
       }
-      const limit = Math.max(this.minimum, this.precision);
+      const limit = Math.max(this.parsed.minimum, this.location.precision);
       const d = this.distanceToPoint(point) - limit;
       const ratio = Math.max(1, d / (4 * limit));
       return `color: color-mix(in srgb, var(--text-primary) ${
@@ -152,31 +242,31 @@ let app = {
       }%, #B71C1C)`;
     },
     closest(point) {
-      if (!this.locationAvailable) {
+      if (!this.location.available) {
         return false;
       }
       return point.id === this.closestPointId;
     },
     precisionStyle() {
-      if (!this.locationAvailable) {
+      if (!this.location.available) {
         return "";
       }
       const ratio = Math.min(
         1,
-        Math.max(0, this.precision - this.minimum) / (4 * this.minimum)
+        Math.max(0, this.location.precision - this.parsed.minimum) /
+          (4 * this.parsed.minimum)
       );
       return `color: color-mix(in srgb, #B71C1C ${
         100 * ratio
       }%, var(--text-primary))`;
     },
-    showApp() {
-      document.getElementById("app").setAttribute("style", "");
-    },
     updatePosition(position) {
-      this.locationAvailable = true;
-      this.latitude = position.coords.latitude;
-      this.longitude = position.coords.longitude;
-      this.precision = position.coords.accuracy;
+      this.location = {
+        available: true,
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+        precision: position.coords.accuracy,
+      };
       this.closestPointId = this.closestPoint().id;
     },
     accessGeolocation() {
@@ -186,66 +276,6 @@ let app = {
           enableHighAccuracy: true,
         });
       }
-    },
-    base64URLTobase64(str) {
-      const base64Encoded = str.replace(/-/g, "+").replace(/_/g, "/");
-      const padding =
-        str.length % 4 === 0 ? "" : "=".repeat(4 - (str.length % 4));
-      return base64Encoded + padding;
-    },
-    base64tobase64URL(str) {
-      return str.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-    },
-    decodeData(str) {
-      return LZString.decompressFromBase64(
-        this.base64URLTobase64(str.split("").reverse().join(""))
-      );
-    },
-    encodeData(str) {
-      return this.base64tobase64URL(LZString.compressToBase64(str))
-        .split("")
-        .reverse()
-        .join("");
-    },
-    readZData(str) {
-      this.debugData = str;
-      const parts = str.split("\n");
-      this.hasMinimum = parts[0].trim().length === 0 || /^\d+$/.test(parts[0]);
-      if (parts.length < 3) {
-        return true;
-      }
-      this.minimum = this.hasMinimum ? parseInt(parts.shift()) : 20;
-      this.points = [];
-      while (parts.length >= 3) {
-        this.points.push({
-          id: this.points.length + 1,
-          latitude: parseFloat(parts.shift()),
-          longitude: parseFloat(parts.shift()),
-          treasure: parts.shift(),
-          name: parts.length > 0 ? parts.shift() : null,
-        });
-      }
-      return false;
-    },
-    initApp() {
-      const url = new URL(window.location);
-      if (url.searchParams.get("z") !== null) {
-        this.debug = this.readZData(this.decodeData(url.searchParams.get("z")));
-      }
-      if (this.debug) {
-        this.readZData(this.debugData);
-        this.updateDebugUrl(this.debugData);
-        this.updateEditor(this.debugData);
-      }
-    },
-    updateIcons() {
-      lucide.createIcons({
-        nameAttr: "icon",
-        attrs: {
-          width: "1.1em",
-          height: "1.1em",
-        },
-      });
     },
   },
   beforeMount: function () {

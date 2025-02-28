@@ -50,19 +50,19 @@
         <hr />
       </div>
       <p class="mono main">
-        Latitude: {{ locationAvailable ? latitudeText : '???' }}<br>
-        Longitude: {{ locationAvailable ? longitudeText : '???' }}<br>
-        <span :style="precisionStyle()">Precision: {{ locationAvailable ? precisionText : '???' }}</span>
+        Latitude: {{ latitudeText }}<br>
+        Longitude: {{ longitudeText }}<br>
+        <span :style="precisionStyle()">Precision: {{ precisionText }}</span>
       </p>
       <hr>
       <div class="main">
-        <template v-for="(point, i) in points">
+        <template v-for="(point, i) in parsed.points">
           <p class="point" v-bind:style="pointStyle(point)" :class="closest(point) ? 'bold' : ''">
           <span v-if="point.name" v-html="point.name"></span><span v-else>Point #{{i + 1}}</span>: {{ distanceText(distanceToPoint(point)) }}
           </span>
           <p
             class="secret"
-            v-if="debug || (locationAvailable && distanceToPoint(point) <= minimum)"
+            v-if="debug || (location.available && distanceToPoint(point) <= parsed.minimum)"
             v-html="point.treasure"
           ></p>
         </template>
